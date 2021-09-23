@@ -45,8 +45,8 @@ class NetworkDefinitions:
     def getDegreeDistrib(self):
         df = pd.DataFrame(data=self.graphNetwork.vs.degree(), columns=['degree'])
 
-#        dd = self.graphNetwork.degree_distribution()
-#        print(dd)
+        #dd = self.graphNetwork.degree_distribution()
+        #print(dd)
 
         plt.hist(df, density=1, bins=20)
         plt.ylabel('Prob')
