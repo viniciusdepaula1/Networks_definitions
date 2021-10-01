@@ -38,3 +38,6 @@ class UsingNetworkx:
 
     def toGml(self):
         nx.write_gml(self.g, "generatedNetwork.gml")
+
+    def returnGraph(self):
+        return self.g
