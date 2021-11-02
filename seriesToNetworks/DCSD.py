@@ -1,9 +1,5 @@
-from typing import Tuple
-from igraph import datatypes
-from igraph.drawing import graph
 import numpy as np
-import networkx as nx
-from igraph import *
+import igraph as ig
 
 
 class DCSD:
@@ -18,7 +14,7 @@ class DCSD:
 
         vetor_binario = self.calcula_vetor_binario(vet_x, meio);
         vet_decimal = self.vetor_bi2decimal(vetor_binario, nn);
-        g = self.to_networkx(vet_decimal,nn,base);
+        g = self.to_igraph(vet_decimal,nn,base);
         #mat_adj_nova = self.calcula_matriz_adj_soh_dos_nohs_conectados(mat_adj);
         #grafoFinal = nx.from_numpy_matrix(mat_adj_nova)
 
@@ -31,7 +27,7 @@ class DCSD:
         visual_style["margin"] = 20
         visual_style["vertex_shape"] = 'circle'
 
-        plot(g, "DCSD_Graph.pdf", **visual_style)
+        ig.plot(g, f"DCSD_Graph{tsFile}.pdf", **visual_style)
         pass
 
     def calcula_vetor_binario(self, x, meio):
@@ -69,12 +65,12 @@ class DCSD:
             vet_dec = np.append(vet_dec,int(string_v,2))
         return(vet_dec.astype(int));
 
-    def to_networkx(self, vet_dec, n, base):
+    def to_igraph(self, vet_dec, n, base):
         #tenho no maximo N = 2^n vertices no grafo. n = tamanho da palavra escolhida na hora da conversao
         #vet_dec(i) se conecta com seu vizinho vet_dec(i+1)
         tam_mat = base**n
         count = 0
-        g = Graph()
+        g = ig.Graph()
         g.add_vertices(tam_mat)
         for i in range(tam_mat):
             g.vs[i]["label"] = i+1
@@ -87,7 +83,7 @@ class DCSD:
             valor = prox_valor;
 
 
-        graphAux = Graph()
+        graphAux = ig.Graph()
         numVertices = 0
         labels = []
 

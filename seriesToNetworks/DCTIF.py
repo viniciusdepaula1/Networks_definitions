@@ -1,18 +1,15 @@
-from igraph import datatypes
-from igraph.drawing import graph
 import numpy as np
-from igraph import *
-
+import igraph as ig
 
 class DCTIF:
 
     def __init__(self, tsFile: str) -> None:
         csv_file = np.genfromtxt(tsFile, delimiter="\t")
         print(len(csv_file))
-        N = 100
+        N = 10000
         count = 0
 
-        g = Graph()
+        g = ig.Graph()
         g.add_vertices(N)
         for i in range(N):
             g.vs[i]["label"] = i+1
@@ -30,11 +27,10 @@ class DCTIF:
 
             index = int(self.integralFunction(x, N))
 
-            print(index);
-            print('Vazei')
-            addEdge(g, indexAnterior-1, index-1)
+            print('index= ', index);
+            self.addEdge(g, indexAnterior-1, index-1)
 
-        graphAux = Graph()
+        graphAux = ig.Graph()
         numVertices = 0
         labels = []
 
@@ -75,7 +71,7 @@ class DCTIF:
         visual_style["margin"] = 20
         visual_style["vertex_shape"] = 'circle'
 
-        plot(graphAux, "DCTIF_Graph.pdf", **visual_style)
+        ig.plot(graphAux, f"DCTIF_Graph{tsFile}.pdf", **visual_style)
         pass
 
     def integralFunction(self, num: int, N: int) -> int:
@@ -90,6 +86,6 @@ class DCTIF:
 
         return result
 
-def addEdge(g, v1, v2):
-    if g.get_eid(v1, v2, directed=False, error=False) == -1:
-        g.add_edge(v1, v2)
+    def addEdge(self, g, v1, v2):
+        if g.get_eid(v1, v2, directed=False, error=False) == -1:
+            g.add_edge(v1, v2)
