@@ -4,31 +4,48 @@ from DCTIF import *
 from DCSD import *
 from VG import *
 
-def main():
+def testeSin():
     serie1 = TS.TemporalSerie();
     serie2 = TS.TemporalSerie();
 
-    x1 = serie1.GenSineSerie(0, 10, 0.1);
-    x2 = serie2.GenSineSerie(0, 10, 0.1);
+    serie1.genSineSerie(0, 10, 0.1);
+    serie2.genSineSerie(0, 10, 0.1);
 
-    serie2.addNoisy(range(10, 20), 0.01);
+    serie2.addNoise(range(10, 20), 0.01);
 
-    serie1.toFile("timeSerie1.txt");
-    serie2.toFile("timeSerie2.txt");
+    #serie1.toFile("timeSerie1.txt");
+    #serie2.toFile("timeSerie2.txt");
 
-    serie1.plotSeries();
-    serie2.plotSeries();
+    #serie1.plotSeries();
+    #serie2.plotSeries();
+        
+    #graphSin1 = DCTIF("timeSerie1.txt");
+    #graphSin2 = DCSD("timeSerie1.txt");
+    #graphSin3 = VG("timeSerie1.txt");
 
-    dtwAlignment = ClassicMethods.calcDTW(x1, x2);
-    print (dtwAlignment);
+    #graphSinNoise1 = DCTIF("timeSerie2.txt");
+    #graphSinNoise2 = DCSD("timeSerie2.txt");
+    #graphSinNoise3 = VG("timeSerie2.txt");
+
+def testeRand():
+    serie3 = TS.TemporalSerie();
+
+    serie3.genRandonSerie(0, 10, 0.1);
+
+    #serie3.toFile("timeSeriesRand.txt");
     
-    graph1 = DCTIF("timeSerie1.txt");
-    graph2 = DCSD("timeSerie1.txt");
-    graph3 = VG("timeSerie1.txt");
+    serie3.plotSeries();
 
-    graph11 = DCTIF("timeSerie2.txt");
-    graph22 = DCSD("timeSerie2.txt");
-    graph33 = VG("timeSerie2.txt");
+    #graphRand1 = DCTIF("timeSeriesRand.txt");
+    #graphRand2 = DCSD("timeSeriesRand.txt");
+    #graphRand3 = VG("timeSeriesRand.txt");
+
+def main():
+    #dtwAlignment = ClassicMethods.calcDTW(x1, x2);
+    
+    #print (dtwAlignment);
+    
+    #ClassicMethods.statisticalSignificance(x1, x2);
 
     pass
 

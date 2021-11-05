@@ -8,7 +8,7 @@ class TemporalSerie:
     def __init__(self) -> None:
        pass
 
-    def GenSineSerie(self, start: int, stop: int, step: int):
+    def genSineSerie(self, start: int, stop: int, step: int):
         self.serieX = np.arange(start, stop, step);
         self.serieY = np.sin(self.serieX);
         self.serieY = self.serieY + 1;
@@ -16,7 +16,11 @@ class TemporalSerie:
 
         return self.serieY;
 
-    def addNoisy(self, rangeValues, value):
+    def genRandonSerie(self, start:int, stop:int, step:int):
+        self.serieX = np.arange(start, stop, step);
+        self.serieY = np.random.rand(len(self.serieX))
+
+    def addNoise(self, rangeValues, value):
         for i in rangeValues:
             self.serieY[i] += value
 
