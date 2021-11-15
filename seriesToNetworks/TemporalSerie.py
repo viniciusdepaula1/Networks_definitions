@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plot
+import random as rnd
+
+from numpy.lib.function_base import copy
 
 class TemporalSerie:
     serieX = []
@@ -8,10 +11,10 @@ class TemporalSerie:
     def __init__(self) -> None:
        pass
 
-    def genSineSerie(self, start: int, stop: int, step: int):
+    def genSineSerie(self, start: int, stop: int, step: int, inc: int =1):
         self.serieX = np.arange(start, stop, step);
         self.serieY = np.sin(self.serieX);
-        self.serieY = self.serieY + 1;
+        self.serieY = self.serieY + inc;
         self.serieY = self.serieY / 10;
 
         return self.serieY;
@@ -20,9 +23,13 @@ class TemporalSerie:
         self.serieX = np.arange(start, stop, step);
         self.serieY = np.random.rand(len(self.serieX))
 
-    def addNoise(self, rangeValues, value):
-        for i in rangeValues:
-            self.serieY[i] += value
+    def addNoise(self, value):
+        newY = copy(self.serieY);
+
+        for i in range(len(self.serieX)):
+            newY[i] += rnd.uniform(-value, value)
+
+        return self.serieX, newY;
 
     def plotSeries(self) -> None:
         plot.plot(self.serieX, self.serieY)
