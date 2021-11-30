@@ -15,7 +15,7 @@ class TemporalSerie:
         self.serieX = np.arange(start, stop, step);
         self.serieY = np.sin(self.serieX);
         self.serieY = self.serieY + inc;
-        self.serieY = self.serieY / 10;
+        self.serieY = self.serieY / 10; # ((sen x) + 5)/ 10 
 
         return self.serieY;
 

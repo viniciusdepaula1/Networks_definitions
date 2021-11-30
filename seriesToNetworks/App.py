@@ -1,13 +1,14 @@
+import numpy
 from numpy.lib.function_base import copy
 import TemporalSerie as TS
 from ClassicMethods import *
 from DCTIF import *
 from DCSD import *
 from VG import *
-import matplotlib.pyplot as plot
 import pandas as pd
 import csv
-import seaborn as sns
+import plotly.express as px
+from scipy import stats
 
 # ruido em uma freq (gaussiana)
 # distribuíção uniforme
@@ -19,90 +20,66 @@ import seaborn as sns
 # e ve oq q da a forma da curva
 # para cada i 1000 séries.
 # envelope -- resultados possíveis para cada i
-# boxplot para cada i
 
-def plotDtwResults():
-    gapminder = pd.read_csv('dtwResults.csv');
-    print(gapminder.Distance[0])
-    my_dict = {'0.05': gapminder.Distance[0:1000], '0.1': gapminder.Distance[1000:2000],
-                '0.15': gapminder.Distance[2000:3000], '0.2':gapminder.Distance[3000:4000],
-                '0.25': gapminder.Distance[4000:5000], '0.3':gapminder.Distance[6000:7000],
-                '0.4': gapminder.Distance[7000:8000]}
-    
-    fig, ax = plot.subplots()
-    ax.boxplot(my_dict.values())
-    ax.set_xticklabels(my_dict.keys())
-    plot.xlabel('Intensity')
-    plot.ylabel('Distance')
-    plot.show()
+def plotResults():
+    #data = pd.read_csv('dtwResults1.csv');
+    data2 = pd.read_csv('pearsonResultsR1.csv');
+
+    fig = px.line(data2, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'Pearson (Intensity x Distance)');
+
+    fig.show()
 
 
-def calcI(serie1, serie2, iValues, dtwResults, iValue):
+def calcI(serie1, serie2, dtwResults, iValue):
     s1X, s1Y = serie1.addNoise(iValue)
-    s2X, s2Y = serie2.addNoise(iValue)
 
-    dtwAlignment = ClassicMethods.calcDTW(s1Y, s2Y, False)
+    dtwAlignment = ClassicMethods.calcDTW(s1Y, serie2.serieY, False)
 
-    iValues.append(iValue)
+    #ClassicMethods.plotSeries(s1X, s1Y);
+    #ClassicMethods.plotSeries(serie2.serieX, serie2.serieY);
+
     dtwResults.append(dtwAlignment)
 
-def similaridadexintensidade():
+def calcPearson(serie1, serie2, pearsonResults, iValue):
+    s1X, s1Y = serie1.addNoise(iValue)
+    r, pValue = stats.pearsonr(s1Y, serie2.serieY)
+    pearsonResults.append(r);
+
+def calcMi(serie1, serie2, miResults, iValue):
+    pass
+
+def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
 
-    iValues = []
-    dtwResults = []
+    results = []
 
-    iValue = 0.05  # 0.05 até 0.40 == 8 iterações == 8000 testes
+    maxResults = []
+    minResults = []
+    averageResults = []
 
-    serie1.genSineSerie(0, 20, 0.1, 5)
-    serie2.genSineSerie(0, 20, 0.1, 5)
+    iValues = np.linspace(0.001, 0.4, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40)
 
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
+    serie1.genSineSerie(0, 30, 0.1, 5)
+    serie2.genSineSerie(0, 30, 0.1, 5)
 
-    iValue = 0.1
+    for i in range(len(iValues)):
+        for j in range(1000):
+            func(serie1, serie2, results, iValues[i]);
 
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
+        averageResults.append(np.mean(results));   
+        maxResults.append(np.max(results));
+        minResults.append(np.min(results));
 
-    iValue = 0.15
+        results = []
 
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    iValue = 0.2
-
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    iValue = 0.25
-
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    iValue = 0.3
-
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    iValue = 0.35
-
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    iValue = 0.4
-
-    for i in range(1000):
-        calcI(serie1, serie2, iValues, dtwResults, iValue)
-
-    f = open("dtwResults.csv", "w+");
+    f = open(fileName, "w+");
     writer = csv.writer(f);
-    header = ['Intensity', 'Distance']
+    header = ['Intensity', 'Average Distance', 'Min Distance', 'Max Distance'];
     writer.writerow(header)
 
     for i in range(len(iValues)):
-        data = [iValues[i], dtwResults[i]];
+        data = [iValues[i], averageResults[i], minResults[i], maxResults[i]];
         writer.writerow(data);
 
 def testeSin():
@@ -147,8 +124,10 @@ def testeRand():
 
 
 def main():
-    #similaridadexintensidade()
-    plotDtwResults()
+    #similaridadeXIntensidade("dtwResults1.csv", calcI)
+    #similaridadeXIntensidade("pearsonResultsR1.csv", calcPearson)
+    #similaridadeXIntensidade("miResults1.csv", calcMi);
+    plotResults()
     #dtwAlignment = ClassicMethods.calcDTW(x1, x2);
 
     #print (dtwAlignment);

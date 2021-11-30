@@ -18,6 +18,10 @@ class ClassicMethods:
         return alignment.distance
 
     @staticmethod
+    def calcMi(x1, x2, plotResult):
+        pass
+
+    @staticmethod
     def statisticalSignificance(s1, s2):
         values = [];
     
