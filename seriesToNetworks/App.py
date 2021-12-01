@@ -9,6 +9,7 @@ import pandas as pd
 import csv
 import plotly.express as px
 from scipy import stats
+import sklearn.metrics as sm
 
 # ruido em uma freq (gaussiana)
 # distribuíção uniforme
@@ -23,9 +24,10 @@ from scipy import stats
 
 def plotResults():
     #data = pd.read_csv('dtwResults1.csv');
-    data2 = pd.read_csv('pearsonResultsR1.csv');
+    #data2 = pd.read_csv('pearsonResultsR1.csv');
+    data3 = pd.read_csv('miResults1.csv');
 
-    fig = px.line(data2, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'Pearson (Intensity x Distance)');
+    fig = px.line(data3, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'Mutual Information (Intensity x Distance)');
 
     fig.show()
 
@@ -46,7 +48,32 @@ def calcPearson(serie1, serie2, pearsonResults, iValue):
     pearsonResults.append(r);
 
 def calcMi(serie1, serie2, miResults, iValue):
-    pass
+    s1X, s1Y = serie1.addNoise(iValue)
+
+    #pd.set_option("display.max_rows", 200, "display.max_columns", 3) 
+    #print("out1")
+    cut, binsRuido = pd.cut(s1Y, 200, retbins=True);
+    out = pd.Series(cut).value_counts()
+    #print(out)
+    #print(len(out))
+    
+    #print("out2")
+    out2 = pd.Series(pd.cut(serie2.serieY, binsRuido)).value_counts();
+    #print(out2)
+    #print(len(out2))
+    
+    r = sm.normalized_mutual_info_score(out, out2);
+
+    #print("Mutual Info");
+    #print(r);
+
+    #print(s1Y)
+    #print(serie2.serieY)
+
+    #ClassicMethods.plotSeries(s1X, s1Y);
+    #ClassicMethods.plotSeries(serie2.serieX, serie2.serieY);
+
+    miResults.append(r);
 
 def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
@@ -126,12 +153,12 @@ def testeRand():
 def main():
     #similaridadeXIntensidade("dtwResults1.csv", calcI)
     #similaridadeXIntensidade("pearsonResultsR1.csv", calcPearson)
-    #similaridadeXIntensidade("miResults1.csv", calcMi);
+    #similaridadeXIntensidade("miResults2.csv", calcMi);
     plotResults()
+    
+    
     #dtwAlignment = ClassicMethods.calcDTW(x1, x2);
-
     #print (dtwAlignment);
-
     #ClassicMethods.statisticalSignificance(x1, x2);
 
     pass
