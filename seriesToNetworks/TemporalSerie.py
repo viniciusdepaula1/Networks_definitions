@@ -7,6 +7,7 @@ from numpy.lib.function_base import copy
 class TemporalSerie:
     serieX = []
     serieY = []
+    casasDecimais = 8
 
     def __init__(self) -> None:
        pass
@@ -16,6 +17,8 @@ class TemporalSerie:
         self.serieY = np.sin(self.serieX);
         self.serieY = self.serieY + inc;
         self.serieY = self.serieY / 10; # ((sen x) + 5)/ 10 
+
+        #self.serieY = [round(num, self.casasDecimais) for num in self.serieY];
 
         return self.serieY;
 
@@ -28,6 +31,8 @@ class TemporalSerie:
 
         for i in range(len(self.serieX)):
             newY[i] += rnd.uniform(-value, value)
+
+        #newY = [round(num, self.casasDecimais) for num in newY];
 
         return self.serieX, newY;
 
