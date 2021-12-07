@@ -1,3 +1,4 @@
+from random import randint
 import numpy
 from numpy.lib.function_base import copy
 import TemporalSerie as TS
@@ -25,9 +26,9 @@ import sklearn.metrics as sm
 def plotResults():
     #data = pd.read_csv('dtwResults1.csv');
     #data2 = pd.read_csv('pearsonResultsR1.csv');
-    data3 = pd.read_csv('miResults4.csv');
+    data3 = pd.read_csv('miResults6.csv');
 
-    fig = px.line(data3, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'Mutual Information (Intensity x Distance)');
+    fig = px.line(data3, x = 'Intensity', y = ['Average Correlation', 'Min Correlation', 'Max Correlation'], title = 'Mutual Information (Intensity x Correlation)');
 
     fig.show()
 
@@ -48,34 +49,17 @@ def calcPearson(serie1, serie2, pearsonResults, iValue):
     pearsonResults.append(r);
 
 def calcMi(serie1, serie2, miResults, iValue):
-    s1X, s1Y = serie1.addNoise(iValue)
-    s2Y = copy(serie2.serieY);
+    s1Y = serie1.minMaxScaling()
 
-    #s1Y = [int(num * 100000000) for num in s1Y];
-    #s2Y = [int(num * 100000000) for num in s2Y];
+    s2Y = copy(s1Y);
 
-    #pd.set_option("display.max_rows", 200, "display.max_columns", 3) 
-    #print("out1")
-    #cut, binsRuido = pd.cut(s1Y, 200, retbins=True);
-    #out = pd.Series(cut).value_counts()
-    #print(out)
-    #print(len(out))
+  
+    s1Y = serie1.addNoiseInt(s1Y, iValue)
     
-    #print("out2")
-    #out2 = pd.Series(pd.cut(serie2.serieY, binsRuido)).value_counts();
-    #print(out2)
-    #print(len(out2))
-    
-    r = sm.mutual_info_score(s1Y, s2Y);   #1.5498260458782016
+    r = sm.normalized_mutual_info_score(s1Y, s2Y);   
 
-    #print("Mutual Info");
-    #print(r);
-
-    #print(s1Y)
-    #print(s2Y)
-
-    #ClassicMethods.plotSeries(s1X, s1Y);
-    #ClassicMethods.plotSeries(serie2.serieX, s2Y);
+    #ClassicMethods.plotSeries(serie1.serieX, s1Y);
+    #ClassicMethods.plotSeries(serie1.serieX, s2Y);
 
     miResults.append(r);
 
@@ -89,7 +73,7 @@ def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     minResults = []
     averageResults = []
 
-    iValues = np.linspace(0.001, 0.4, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40)
+    iValues = np.linspace(10, 4000, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
 
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
@@ -157,8 +141,8 @@ def testeRand():
 def main():
     #similaridadeXIntensidade("dtwResults1.csv", calcI)
     #similaridadeXIntensidade("pearsonResultsR1.csv", calcPearson)
-    #similaridadeXIntensidade("miResults4.csv", calcMi);
-    plotResults();
+    similaridadeXIntensidade("miResults7.csv", calcMi);
+    #plotResults();
     
     
     #dtwAlignment = ClassicMethods.calcDTW(x1, x2);

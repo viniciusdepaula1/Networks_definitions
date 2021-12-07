@@ -36,6 +36,22 @@ class TemporalSerie:
 
         return self.serieX, newY;
 
+    def addNoiseInt(self, y, value):
+        newY = copy(y);
+
+        for i in range(len(y)):
+            newY[i] += rnd.randint(-value, value)
+
+        return newY;
+
+    def minMaxScaling(self):
+        newY = copy(self.serieY);
+        newY = np.array(newY)
+        newY = 1 + (((newY - newY.min()) * (10000 - 1)) / newY.max() - newY.min())
+        newY = newY + 3250;
+        newY = [int(num) for num in newY]
+        return newY
+
     def plotSeries(self) -> None:
         plot.plot(self.serieX, self.serieY)
         plot.title('Sine wave')
