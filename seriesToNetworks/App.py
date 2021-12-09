@@ -26,7 +26,7 @@ import sklearn.metrics as sm
 def plotResults():
     #data = pd.read_csv('dtwResults1.csv');
     #data2 = pd.read_csv('pearsonResultsR1.csv');
-    data3 = pd.read_csv('miResults6.csv');
+    data3 = pd.read_csv('miResults.csv');
 
     fig = px.line(data3, x = 'Intensity', y = ['Average Correlation', 'Min Correlation', 'Max Correlation'], title = 'Mutual Information (Intensity x Correlation)');
 
@@ -49,19 +49,20 @@ def calcPearson(serie1, serie2, pearsonResults, iValue):
     pearsonResults.append(r);
 
 def calcMi(serie1, serie2, miResults, iValue):
-    s1Y = serie1.minMaxScaling()
-
-    s2Y = copy(s1Y);
-
-  
-    s1Y = serie1.addNoiseInt(s1Y, iValue)
+    s1X, s1Y = serie1.addNoise(iValue)
     
-    r = sm.normalized_mutual_info_score(s1Y, s2Y);   
+    c_xy = np.histogram2d(s1Y, serie2.serieY, 8)[0]
 
-    #ClassicMethods.plotSeries(serie1.serieX, s1Y);
-    #ClassicMethods.plotSeries(serie1.serieX, s2Y);
+    mi = sm.mutual_info_score(None, None, contingency=c_xy)
 
-    miResults.append(r);
+    #print('Noise: ', iValue);
+    #print('Mutual info: ', mi)
+    #print('Histogram2d:\n', c_xy);
+
+    #ClassicMethods.plotSeries(s1X, s1Y);
+    #ClassicMethods.plotSeries(serie2.serieX, serie2.serieY);
+
+    miResults.append(mi);
 
 def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
@@ -73,7 +74,7 @@ def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     minResults = []
     averageResults = []
 
-    iValues = np.linspace(10, 4000, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
+    iValues = np.linspace(0.001, 0.4, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
 
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
@@ -141,8 +142,8 @@ def testeRand():
 def main():
     #similaridadeXIntensidade("dtwResults1.csv", calcI)
     #similaridadeXIntensidade("pearsonResultsR1.csv", calcPearson)
-    similaridadeXIntensidade("miResults7.csv", calcMi);
-    #plotResults();
+    #similaridadeXIntensidade("miResults7.csv", calcMi);
+    plotResults();
     
     
     #dtwAlignment = ClassicMethods.calcDTW(x1, x2);

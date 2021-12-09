@@ -40,7 +40,7 @@ class TemporalSerie:
         newY = copy(y);
 
         for i in range(len(y)):
-            newY[i] += rnd.randint(-value, value)
+            newY[i] += (rnd.randint(-1, 1))
 
         return newY;
 
