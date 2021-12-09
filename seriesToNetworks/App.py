@@ -11,6 +11,7 @@ import csv
 import plotly.express as px
 from scipy import stats
 import sklearn.metrics as sm
+import sklearn.feature_selection._mutual_info as mmmi
 
 # ruido em uma freq (gaussiana)
 # distribuíção uniforme
@@ -26,9 +27,9 @@ import sklearn.metrics as sm
 def plotResults():
     #data = pd.read_csv('dtwResults1.csv');
     #data2 = pd.read_csv('pearsonResultsR1.csv');
-    data3 = pd.read_csv('miResults.csv');
+    data3 = pd.read_csv('miResults111.csv');
 
-    fig = px.line(data3, x = 'Intensity', y = ['Average Correlation', 'Min Correlation', 'Max Correlation'], title = 'Mutual Information (Intensity x Correlation)');
+    fig = px.line(data3, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'Mutual Information (Intensity x Correlation)');
 
     fig.show()
 
@@ -51,9 +52,11 @@ def calcPearson(serie1, serie2, pearsonResults, iValue):
 def calcMi(serie1, serie2, miResults, iValue):
     s1X, s1Y = serie1.addNoise(iValue)
     
-    c_xy = np.histogram2d(s1Y, serie2.serieY, 8)[0]
+    #c_xy = np.histogram2d(s1Y, serie2.serieY, 8)[0]
 
-    mi = sm.mutual_info_score(None, None, contingency=c_xy)
+    #mi = sm.mutual_info_score(None, None, contingency=c_xy)
+
+    mi2 = mmmi._compute_mi_cc(s1Y, serie2.serieY, 4)   #k=4 || k=6
 
     #print('Noise: ', iValue);
     #print('Mutual info: ', mi)
@@ -62,7 +65,7 @@ def calcMi(serie1, serie2, miResults, iValue):
     #ClassicMethods.plotSeries(s1X, s1Y);
     #ClassicMethods.plotSeries(serie2.serieX, serie2.serieY);
 
-    miResults.append(mi);
+    miResults.append(mi2);
 
 def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
@@ -140,9 +143,9 @@ def testeRand():
 
 
 def main():
-    #similaridadeXIntensidade("dtwResults1.csv", calcI)
-    #similaridadeXIntensidade("pearsonResultsR1.csv", calcPearson)
-    #similaridadeXIntensidade("miResults7.csv", calcMi);
+    #similaridadeXIntensidade("dtwResults.csv", calcI)
+    #similaridadeXIntensidade("pearsonResults.csv", calcPearson)
+    similaridadeXIntensidade("miResults111.csv", calcMi);
     plotResults();
     
     
