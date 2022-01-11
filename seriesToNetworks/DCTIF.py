@@ -1,13 +1,15 @@
-from typing import Set
 import numpy as np
 import igraph as ig
 
 class DCTIF:
 
-    def __init__(self, tsFile: str) -> None:
-        csv_file = np.genfromtxt(tsFile, delimiter="\t")
-        print(len(csv_file))
-        N = 10000
+    def __init__(self) -> None:
+       pass
+
+    def gen_network(self, serie):
+        #csv_file = np.genfromtxt(serie, delimiter="\t")
+        
+        N = 1000
         count = 0
 
         g = ig.Graph()
@@ -15,12 +17,11 @@ class DCTIF:
         for i in range(N):
             g.vs[i]["label"] = i+1
 
-        x = csv_file[count, 1]
-        print(x);
+        x = serie[count]
         index = int(self.integralFunction(x, N))
 
-        for i in range(len(csv_file)):
-            x = csv_file[count+i, 1]
+        for i in range(len(serie)):
+            x = serie[count+i]
             print(x)
             print(index)
 
@@ -28,7 +29,7 @@ class DCTIF:
 
             index = int(self.integralFunction(x, N))
 
-            print('index= ', index);
+            #print('index= ', index);
             self.addEdge(g, indexAnterior-1, index-1)
 
         graphAux = ig.Graph()
@@ -40,9 +41,9 @@ class DCTIF:
                 numVertices = numVertices + 1
                 labels.append(i["label"])
 
-        print('labels= ', labels);
-        print('numVertices= ', numVertices);
-        print('numArestas= ', len(g.es));
+        #print('labels= ', labels);
+        #print('numVertices= ', numVertices);
+        #print('numArestas= ', len(g.es));
 
         graphAux.add_vertices(numVertices)
         for i in range(numVertices):
@@ -55,25 +56,20 @@ class DCTIF:
             print('src= ', src);
             print('dst= ', dst);
 
-            src_ = 0
-            dst_ = 0
-            for j in graphAux.vs:
-                if j["label"] == src:
-                    src_ = j.index
-                if j["label"] == dst:
-                    dst_ = j.index
-            graphAux.add_edge(src_, dst_)
+            if(src != dst):
+                src_ = 0
+                dst_ = 0
+                for j in graphAux.vs:
+                    if j["label"] == src:
+                        src_ = j.index
+                    if j["label"] == dst:
+                        dst_ = j.index
+                graphAux.add_edge(src_, dst_)
 
-        #return graphAux
-        visual_style = {}
-        visual_style["vertex_size"] = [i for i in graphAux.vs.degree()]
-        visual_style["vertex_color"] = ['gray' if i < 15 else 'blue' for i in graphAux.vs.degree()]
-        visual_style["bbox"] = (400, 400)
-        visual_style["margin"] = 20
-        visual_style["vertex_shape"] = 'circle'
-
-        ig.plot(graphAux, f"DCTIF_Graph{tsFile}.pdf", **visual_style)
-        pass
+        #ig.plot(graphAux)
+        
+        return graphAux
+        
 
     def integralFunction(self, num: int, N: int) -> int:
         result = int()

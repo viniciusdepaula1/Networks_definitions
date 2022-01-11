@@ -1,34 +1,53 @@
 import numpy as np
 import igraph as ig
+import networkx as nx
 
 
 class DCSD:
-    def __init__(self, tsFile) -> None:
-        csv_file = np.genfromtxt(tsFile, delimiter="\t");
-        meio = middlePoint(csv_file)
+    def __init__(self) -> None:
+        pass
+
+    def gen_network(self, serie) -> None:
+        meio = middlePoint(serie)
         base = 2
         nn = 10
 
-        vet_x = csv_file[0:len(csv_file), 1]
-        print(vet_x)
+        vet_x = serie
+        #print(vet_x)
 
         vetor_binario = self.calcula_vetor_binario(vet_x, meio);
         vet_decimal = self.vetor_bi2decimal(vetor_binario, nn);
-        g = self.to_igraph(vet_decimal,nn,base);
-        #mat_adj_nova = self.calcula_matriz_adj_soh_dos_nohs_conectados(mat_adj);
+        g = self.mat_adjacencia(vet_decimal,nn,base);
+
+        mat_adj_nova = self.calcula_matriz_adj_soh_dos_nohs_conectados(g);
         #grafoFinal = nx.from_numpy_matrix(mat_adj_nova)
+        
+        return mat_adj_nova
 
-        #return graphAux
-        visual_style = {}
-        visual_style = {}
-        visual_style["vertex_size"] = [i for i in g.vs.degree()]
-        visual_style["vertex_color"] = ['gray' if i < 15 else 'blue' for i in g.vs.degree()]
-        visual_style["bbox"] = (400, 400)
-        visual_style["margin"] = 20
-        visual_style["vertex_shape"] = 'circle'
+    def calcula_matriz_adj_soh_dos_nohs_conectados(self, mat):
+        #recebe matriz de adjacencia e calcula diametro da rede.
+        #primeiro tem que remover todas as linhas e colunas nulas da matriz se nao da erro na funcao
+        
+        tam = len(mat[0,:])
+        
+        indice = 0 #indice auxiliar pra matriz
+        tam_novo = tam
 
-        ig.plot(g, f"DCSD_Graph{tsFile}.pdf", **visual_style)
-        pass
+        for i in range(tam):
+            if indice < tam_novo:
+                if sum(mat[indice,:]) == 0: #remove a linha e a coluna i dessa matriz. (se a linha eh toda zero, a coluna tb eh)
+                    mat_aux = np.delete(mat,indice,0) #deleta a linha i
+                    mat = np.delete(mat_aux,indice,1) #deleta a coluna i
+                    if tam_novo - indice > 1:	#quando a diferenca entre eles eh 1 ja ta no final			
+                        tam_novo = len(mat[indice,:])
+                else:
+                    indice = indice + 1 #soh anda o indice se nao deletar nenhuma linha/coluna
+            else:
+                break
+
+                
+
+        return(mat)
 
     def calcula_vetor_binario(self, x, meio):
         #recebe um vetor x e transforma ele em um vetor binario. aqui x vai de -1 ate 1. 
@@ -121,19 +140,42 @@ class DCSD:
             graphAux.add_edge(src_, dst_);
 
         return graphAux
+    
+    def mat_adjacencia(self, vet_dec, n, base):
+        #tenho no maximo N = 2^n vertices no grafo. n = tamanho da palavra escolhida na hora da conversao
+        #vet_dec(i) se conecta com seu vizinho vet_dec(i+1)
+        tam_mat = base**n
+        
+        mat_adj = np.zeros(shape=(tam_mat,tam_mat))
+
+        for i in range(len(vet_dec)-1):
+            j1 = vet_dec[i]#posicao do no inicial na mat_adj
+            j2 = vet_dec[i+1]
+            
+            mat_adj[j1,j2] = 1
+            mat_adj[j2,j1] = 1
+
+            #marca esse campo da mat adjacencia como 1. matriz simetrica
+            #if j1 != j2: #nao vai permitir autoconexao
+            #	mat_adj[j1,j2] = 1
+            #	mat_adj[j2,j1] = 1
+        
+        return(mat_adj.astype(int))
 
 def middlePoint(csv_file) -> int:
     menor = 99999
     maior = -99999
 
     for i in range(len(csv_file)):
-        if menor > csv_file[i, 1]:
-            menor = csv_file[i, 1]
-        if maior < csv_file[i, 1]:
-            maior = csv_file[i, 1]
+        if menor > csv_file[i]:
+            menor = csv_file[i]
+        if maior < csv_file[i]:
+            maior = csv_file[i]
 
     return (maior + menor) / 2
 
 def addEdge(g, v1, v2):
     if g.get_eid(v1, v2, directed=False, error=False) == -1:
         g.add_edge(v1, v2)
+
+
