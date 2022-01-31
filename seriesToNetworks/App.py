@@ -193,7 +193,7 @@ def network_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
     minResults = []
     averageResults = []
 
-    iValues = np.linspace(0.001, 0.4, 10);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
+    iValues = np.linspace(0.001, 0.4, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
 
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
