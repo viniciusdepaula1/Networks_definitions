@@ -1,0 +1,3 @@
+	./count/network1	./count/network2
+./count/network1	0	3.818034067334715
+./count/network2	3.818034067334715	0

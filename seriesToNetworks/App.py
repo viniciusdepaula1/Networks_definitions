@@ -9,13 +9,14 @@ from ClassicMethods import *
 from DCTIF import *
 from DCSD import *
 from VG import *
+from GCD11 import *
 import pandas as pd
 import csv
 import plotly.express as px
 from scipy import stats
 import sklearn.metrics as sm
 import sklearn.feature_selection._mutual_info as mmmi
-
+import os
 
 #mutual information
 #noise intensity
@@ -28,7 +29,7 @@ def plotResults():
     #data2 = pd.read_csv('pearsonResults.csv');
     #data3 = pd.read_csv('mi_4_neighbors.csv');
 
-    allData = pd.read_csv('HD_DCTIF.csv');
+    allData = pd.read_csv('GCD11_Result.csv');
 
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'DCTIF -- Hamming distance');
 
@@ -157,9 +158,34 @@ def calcDCSD(adj_matrix, serie2, dcsd_results, iValue):
     dcsd_results.append(countDiff)
     
 
-def network_similaridade_x_Intensidade(fileName, func): #pearson, mi, dtw
+def vgGCD11(serie2, vg_results, iValue): 
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = VG()
+    network2 = graph2.gen_network(s1Y)
+
+    toLeda(network2, './GCD-11/count/network2.gw')
+
+    os.system("(cd ./GCD-11/count && python count.py network2.gw)")
+
+    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
+
+    vg_results.append(readResults());
+
+def readResults():
+    file = open('./GCD-11/count/gcd11.txt')
+    
+    file.readline()
+    
+    results = file.readline().split('\t')
+
+    final = results[2].rstrip()
+
+    return float(final)
+
+def network_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
+    readResults()
 
     results = []
 
@@ -167,18 +193,19 @@ def network_similaridade_x_Intensidade(fileName, func): #pearson, mi, dtw
     minResults = []
     averageResults = []
 
-    iValues = np.linspace(0.001, 0.4, 400);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
+    iValues = np.linspace(0.001, 0.4, 10);  #(0.001, 0.4, 400) (0.01, 0.4, 40) (10, 4000, 400)
 
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
 
     graph1 = VG();
-    net1 = graph1.gen_network(serie1.serieY);
-    adj1 = net1.get_adjacency()
+    network1 = graph1.gen_network(serie1.serieY);
+    toLeda(network1, './GCD-11/count/network1.gw');
+    os.system("(cd ./GCD-11/count && python count.py network1.gw)")
 
     for i in range(len(iValues)):
         for j in range(1000):
-            func(adj1, serie2, results, iValues[i]);
+            func(serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
         maxResults.append(np.max(results));
@@ -200,7 +227,7 @@ def network_similaridade_x_Intensidade(fileName, func): #pearson, mi, dtw
         writer.writerow(data);
 
 
-def similaridadeXIntensidade(fileName, func): #pearson, mi, dtw
+def serie_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
 
@@ -279,14 +306,15 @@ def testeRand():
 
 
 if __name__ == "__main__":
-    #similaridadeXIntensidade("dtwResults.csv", calcI)
-    #similaridadeXIntensidade("pearsonResults.csv", calcPearson)
-    #similaridadeXIntensidade("miResults.csv", calcMi);
+    #serie_similaridade_x_intensidade("dtwResults.csv", calcI)
+    #serie_similaridade_x_intensidade("pearsonResults.csv", calcPearson)
+    #serie_similaridade_x_intensidade("miResults.csv", calcMi);
     
     #mergeResults()
-    plotResults();
+    #plotResults();
     
-    #network_similaridade_x_Intensidade("HD_VG.csv", calcVG)
-    
+    #network_similaridade_x_intensidade("HD_VG.csv", calcVG)
+    network_similaridade_x_intensidade("GCD11_Result.csv", vgGCD11)
+
     #testeRand()
     #testeSin()
