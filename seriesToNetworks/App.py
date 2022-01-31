@@ -204,7 +204,7 @@ def network_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
     os.system("(cd ./GCD-11/count && python count.py network1.gw)")
 
     for i in range(len(iValues)):
-        for j in range(1000):
+        for j in range(100):
             func(serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
