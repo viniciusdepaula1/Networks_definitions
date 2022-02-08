@@ -1,21 +1,14 @@
-from random import randint
-from re import X
-import numpy
-from scipy import*
-import array
-from numpy.lib.function_base import copy, piecewise
-from scipy.fftpack import dct
-import TemporalSerie as TS
 from ClassicMethods import *
 from DCTIF import *
 from DCSD import *
 from VG import *
-from GCD11 import *
+from scipy import stats
+
+import TemporalSerie as TS
 import pandas as pd
 import csv
 import plotly.express as px
 from scipy import stats
-import sklearn.metrics as sm
 import sklearn.feature_selection._mutual_info as mmmi
 import os
 
@@ -43,7 +36,7 @@ def calcMi(serie1, serie2, miResults, iValue):
     miResults.append(mi2);
 
 
-#harming distance function
+# Hamming distance function
 def calcHd(adj_matrix, serie2, hdResults, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
     
@@ -113,8 +106,11 @@ def readResults():
     final = results[2].rstrip()
     return float(final)
 
+def toLeda(network1, file_name):
+    network1.write_leda(file_name, names=None, weights=None)
 
-#Network distance calculator
+
+#Network distance calc
 def network_similaridade_x_intensidade(fileName, func): 
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
@@ -160,7 +156,7 @@ def network_similaridade_x_intensidade(fileName, func):
         writer.writerow(data);
 
 
-#Series distance calculator
+#Series distance calc
 def serie_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
