@@ -9,7 +9,7 @@ class DCTIF:
     def gen_network(self, serie):
         #csv_file = np.genfromtxt(serie, delimiter="\t")
         
-        N = 1000
+        N = 100
         count = 0
 
         g = ig.Graph()
@@ -22,8 +22,8 @@ class DCTIF:
 
         for i in range(len(serie)):
             x = serie[count+i]
-            print(x)
-            print(index)
+            #print(x)
+            #print(index)
 
             indexAnterior = index
 
@@ -53,8 +53,8 @@ class DCTIF:
             src = g.vs[g.es[i].source]["label"]
             dst = g.vs[g.es[i].target]["label"]
 
-            print('src= ', src);
-            print('dst= ', dst);
+            #print('src= ', src);
+            #print('dst= ', dst);
 
             if(src != dst):
                 src_ = 0

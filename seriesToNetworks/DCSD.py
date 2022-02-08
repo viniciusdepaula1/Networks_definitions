@@ -7,7 +7,7 @@ class DCSD:
     def __init__(self) -> None:
         pass
 
-    def gen_network(self, serie) -> None:
+    def gen_network(self, serie):
         meio = middlePoint(serie)
         base = 2
         nn = 10
@@ -21,8 +21,9 @@ class DCSD:
 
         mat_adj_nova = self.calcula_matriz_adj_soh_dos_nohs_conectados(g);
         #grafoFinal = nx.from_numpy_matrix(mat_adj_nova)
-        
-        return mat_adj_nova
+        grafoFinal = ig.Graph.Adjacency(mat_adj_nova, mode='undirected')
+        #ig.plot(grafoFinal, f"VG_Graph.pdf")
+        return grafoFinal
 
     def calcula_matriz_adj_soh_dos_nohs_conectados(self, mat):
         #recebe matriz de adjacencia e calcula diametro da rede.
