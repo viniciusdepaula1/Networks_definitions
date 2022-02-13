@@ -8,28 +8,24 @@ class DCTIF:
 
     def gen_network(self, serie):
         #csv_file = np.genfromtxt(serie, delimiter="\t")
-        
+    
         N = 100
-        count = 0
 
         g = ig.Graph()
         g.add_vertices(N)
         for i in range(N):
             g.vs[i]["label"] = i+1
 
-        x = serie[count]
+        x = serie[0]
         index = int(self.integralFunction(x, N))
 
-        for i in range(len(serie)):
-            x = serie[count+i]
-            #print(x)
-            #print(index)
+        for i in range(1, len(serie)):
+            x = serie[i]
 
             indexAnterior = index
 
             index = int(self.integralFunction(x, N))
 
-            #print('index= ', index);
             self.addEdge(g, indexAnterior-1, index-1)
 
         graphAux = ig.Graph()

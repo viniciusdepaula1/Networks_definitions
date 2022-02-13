@@ -1,3 +1,4 @@
+from numpy import arange, ndarray
 from ClassicMethods import *
 from DCTIF import *
 from DCSD import *
@@ -9,12 +10,13 @@ import pandas as pd
 import csv
 import plotly.express as px
 from scipy import stats
+import netlsd
 import sklearn.feature_selection._mutual_info as mmmi
 import os
 
 
 def plotResults():
-    allData = pd.read_csv('VG_GCD11.csv');
+    allData = pd.read_csv('DCSD_NETLSD1.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -87,7 +89,7 @@ def dcsdGCD11(serie2, dcsd_results, iValue):
     network2 = graph2.gen_network(s1Y)
     toLeda(network2, './GCD-11/count/network2.gw')
     os.system("(cd ./GCD-11/count && python count.py network2.gw)")
-    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'degree' 1)")
+    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
     dcsd_results.append(readResults())
 
 def dctifGCD11(serie2, dctif_results, iValue):
@@ -110,11 +112,35 @@ def toLeda(network1, file_name):
     network1.write_leda(file_name, names=None, weights=None)
 
 
+#NetLSD functions
+def vgNetLSD(desc1, serie2, vg_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = VG()
+    network2 = graph2.gen_network(s1Y)
+    desc2 = netlsd.heat(network2);
+    distance = netlsd.compare(desc1, desc2);
+    vg_results.append(distance)
+
+def dcsdNetLSD(desc1, serie2, dcsd_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = DCSD()
+    network2 = graph2.gen_network(s1Y)
+    desc2 = netlsd.heat(network2);
+    distance = netlsd.compare(desc1, desc2)
+    dcsd_results.append(distance)
+
+def dctifNetLSD(desc1, serie2, dctif_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = DCTIF()
+    network2 = graph2.gen_network(s1Y)
+    desc2 = netlsd.heat(network2);
+    distance = netlsd.compare(desc1, desc2)
+    dctif_results.append(distance)
+
 #Network distance calc
 def network_similaridade_x_intensidade(fileName, func): 
     serie1 = TS.TemporalSerie()
     serie2 = TS.TemporalSerie()
-    readResults()
 
     results = []
 
@@ -127,14 +153,13 @@ def network_similaridade_x_intensidade(fileName, func):
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
 
-    graph1 = DCTIF();
+    graph1 = DCSD();
     network1 = graph1.gen_network(serie1.serieY);
-    toLeda(network1, './GCD-11/count/network1.gw');
-    os.system("(cd ./GCD-11/count && python count.py network1.gw)")
+    desc = netlsd.heat(network1)
 
     for i in range(len(iValues)):
-        for j in range(1000):
-            func(serie2, results, iValues[i]);
+        for j in range(100):
+            func(desc, serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
         maxResults.append(np.max(results));
@@ -192,6 +217,8 @@ def serie_similaridade_x_intensidade(fileName, func): #pearson, mi, dtw
         writer.writerow(data);
 
 
+
+
 if __name__ == "__main__":
     #serie_similaridade_x_intensidade("dtwResults.csv", calcI)
     #serie_similaridade_x_intensidade("pearsonResults.csv", calcPearson)
@@ -204,6 +231,5 @@ if __name__ == "__main__":
     
     #network_similaridade_x_intensidade("GCD11_Result.csv", vgGCD11)
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
-    network_similaridade_x_intensidade("DCTIF(100)_GCD11.csv", dctifGCD11)
-    #testeRand()
-    #testeSin()
+    #network_similaridade_x_intensidade("DCTIF(100)_GCD11.csv", dctifGCD11)
+    network_similaridade_x_intensidade("DCSD_NETLSD1.csv", dcsdNetLSD)
