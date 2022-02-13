@@ -1,0 +1,11 @@
+numpy
+scipy
+netlsd
+plotly
+sklearn
+igraph
+networkx
+dtw
+matplotlib
+ts2vg
+pandas
