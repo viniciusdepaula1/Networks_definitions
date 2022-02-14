@@ -23,7 +23,7 @@ class DCSD:
         #grafoFinal = nx.from_numpy_matrix(mat_adj_nova)
         grafoFinal = ig.Graph.Adjacency(mat_adj_nova, mode='undirected')
         #ig.plot(grafoFinal, f"VG_Graph.pdf")
-        return grafoFinal
+        return grafoFinal.to_networkx()
 
     def calcula_matriz_adj_soh_dos_nohs_conectados(self, mat):
         #recebe matriz de adjacencia e calcula diametro da rede.

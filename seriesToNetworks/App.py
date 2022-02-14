@@ -5,6 +5,7 @@ from DCSD import *
 from VG import *
 from scipy import stats
 
+from portrait_divergence.portrait_divergence import portrait_divergence
 import TemporalSerie as TS
 import pandas as pd
 import csv
@@ -14,9 +15,8 @@ import netlsd
 import sklearn.feature_selection._mutual_info as mmmi
 import os
 
-
 def plotResults():
-    allData = pd.read_csv('DCSD_NETLSD1.csv');
+    allData = pd.read_csv('DCTIF_PORTRAIT.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -137,6 +137,27 @@ def dctifNetLSD(desc1, serie2, dctif_results, iValue):
     distance = netlsd.compare(desc1, desc2)
     dctif_results.append(distance)
 
+
+#Portrait_divergence functions  (only networkx)
+def vgPortrait(network1, serie2, vg_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = VG()
+    network2 = graph2.gen_network(s1Y)
+    vg_results.append(portrait_divergence(network1, network2))
+
+def dcsdPortrait(network1, serie2, dcsd_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = DCSD()
+    network2 = graph2.gen_network(s1Y)
+    dcsd_results.append(portrait_divergence(network1, network2))
+
+def dctifPortrait(network1, serie2, dctif_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = DCTIF()
+    network2 = graph2.gen_network(s1Y)
+    dctif_results.append(portrait_divergence(network1, network2))
+
+
 #Network distance calc
 def network_similaridade_x_intensidade(fileName, func): 
     serie1 = TS.TemporalSerie()
@@ -155,11 +176,10 @@ def network_similaridade_x_intensidade(fileName, func):
 
     graph1 = DCTIF();
     network1 = graph1.gen_network(serie1.serieY);
-    desc = netlsd.heat(network1)
 
     for i in range(len(iValues)):
         for j in range(100):
-            func(desc, serie2, results, iValues[i]);
+            func(network1, serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
         maxResults.append(np.max(results));
@@ -231,5 +251,6 @@ if __name__ == "__main__":
     
     #network_similaridade_x_intensidade("GCD11_Result.csv", vgGCD11)
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
-    #network_similaridade_x_intensidade("DCTIF(100)_GCD11.csv", dctifGCD11)
-    network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
+    #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
+
+    network_similaridade_x_intensidade("DCTIF_PORTRAIT.csv", dctifPortrait)
