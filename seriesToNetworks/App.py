@@ -174,7 +174,7 @@ def network_similaridade_x_intensidade(fileName, func):
     serie1.genSineSerie(0, 30, 0.1, 5)
     serie2.genSineSerie(0, 30, 0.1, 5)
 
-    graph1 = DCTIF();
+    graph1 = VG();
     network1 = graph1.gen_network(serie1.serieY);
 
     for i in range(len(iValues)):
@@ -253,4 +253,4 @@ if __name__ == "__main__":
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
     #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
 
-    network_similaridade_x_intensidade("DCTIF_PORTRAIT.csv", dctifPortrait)
+    network_similaridade_x_intensidade("VG_PORTRAIT.csv", vgPortrait)
