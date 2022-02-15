@@ -16,7 +16,7 @@ import sklearn.feature_selection._mutual_info as mmmi
 import os
 
 def plotResults():
-    allData = pd.read_csv('DCTIF_PORTRAIT.csv');
+    allData = pd.read_csv('portrait_results/DCTIF_PORTRAIT.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -178,7 +178,7 @@ def network_similaridade_x_intensidade(fileName, func):
     network1 = graph1.gen_network(serie1.serieY);
 
     for i in range(len(iValues)):
-        for j in range(100):
+        for j in range(1000):
             func(network1, serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     #serie_similaridade_x_intensidade("miResults.csv", calcMi);
     
     #mergeResults()
-    #plotResults();
+    plotResults();
     
     #network_similaridade_x_intensidade("HD_VG.csv", calcVG)
     
@@ -253,4 +253,4 @@ if __name__ == "__main__":
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
     #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
 
-    network_similaridade_x_intensidade("VG_PORTRAIT.csv", vgPortrait)
+    #network_similaridade_x_intensidade("VG_PORTRAIT.csv", vgPortrait)
