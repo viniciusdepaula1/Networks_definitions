@@ -1,12 +1,12 @@
 from numpy import arange, ndarray
-from ClassicMethods import *
-from DCTIF import *
-from DCSD import *
-from VG import *
+from src.ClassicMethods import *
+from src.DCTIF import *
+from src.DCSD import *
+from src.VG import *
 from scipy import stats
 
-from portrait_divergence.portrait_divergence import portrait_divergence
-import TemporalSerie as TS
+from src.portrait_divergence.portrait_divergence import portrait_divergence
+import src.TemporalSerie as TS
 import pandas as pd
 import csv
 import plotly.express as px
@@ -16,7 +16,7 @@ import sklearn.feature_selection._mutual_info as mmmi
 import os
 
 def plotResults():
-    allData = pd.read_csv('portrait_results/DCTIF_PORTRAIT.csv');
+    allData = pd.read_csv('VG_GCD11_Result.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -78,31 +78,40 @@ def vgGCD11(serie2, vg_results, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
     graph2 = VG()
     network2 = graph2.gen_network(s1Y)
-    toLeda(network2, './GCD-11/count/network2.gw')
-    os.system("(cd ./GCD-11/count && python count.py network2.gw)")
-    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
+    toLeda(network2, './src/GCD-11/count/network2.gw')
+    os.system("(cd ./src/GCD-11/count && python count.py network2.gw)")
+    os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
+    vg_results.append(readResults());
+
+def nvgGCD11(serie2, vg_results, iValue): 
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = VG()
+    network2 = graph2.gen_horizontal_network(s1Y)
+    toLeda(network2, './src/GCD-11/count/network2.gw')
+    os.system("(cd ./src/GCD-11/count && python count.py network2.gw)")
+    os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
     vg_results.append(readResults());
 
 def dcsdGCD11(serie2, dcsd_results, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
     graph2 = DCSD()
     network2 = graph2.gen_network(s1Y)
-    toLeda(network2, './GCD-11/count/network2.gw')
-    os.system("(cd ./GCD-11/count && python count.py network2.gw)")
-    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
+    toLeda(network2, './src/GCD-11/count/network2.gw')
+    os.system("(cd ./src/GCD-11/count && python count.py network2.gw)")
+    os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
     dcsd_results.append(readResults())
 
 def dctifGCD11(serie2, dctif_results, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
     graph2 = DCTIF()
     network2 = graph2.gen_network(s1Y)
-    toLeda(network2, './GCD-11/count/network2.gw')
-    os.system("(cd ./GCD-11/count && python count.py network2.gw)")
-    os.system("(cd ./GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
+    toLeda(network2, './src/GCD-11/count/network2.gw')
+    os.system("(cd ./src/GCD-11/count && python count.py network2.gw)")
+    os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
     dctif_results.append(readResults())
     
 def readResults():
-    file = open('./GCD-11/count/gcd11.txt')
+    file = open('./src/GCD-11/count/gcd11.txt')
     file.readline()
     results = file.readline().split('\t')
     final = results[2].rstrip()
@@ -175,11 +184,13 @@ def network_similaridade_x_intensidade(fileName, func):
     serie2.genSineSerie(0, 30, 0.1, 5)
 
     graph1 = VG();
-    network1 = graph1.gen_network(serie1.serieY);
+    network1 = graph1.gen_horizontal_network(serie1.serieY);
+    toLeda(network1, './src/GCD-11/count/network1.gw');
+    os.system("(cd ./src/GCD-11/count && python count.py network1.gw)")
 
     for i in range(len(iValues)):
-        for j in range(1000):
-            func(network1, serie2, results, iValues[i]);
+        for j in range(100):
+            func(serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
         maxResults.append(np.max(results));
@@ -245,11 +256,11 @@ if __name__ == "__main__":
     #serie_similaridade_x_intensidade("miResults.csv", calcMi);
     
     #mergeResults()
-    plotResults();
+    #plotResults();
     
     #network_similaridade_x_intensidade("HD_VG.csv", calcVG)
     
-    #network_similaridade_x_intensidade("GCD11_Result.csv", vgGCD11)
+    network_similaridade_x_intensidade("NVG_GCD11_Result.csv", vgGCD11)
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
     #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
 
