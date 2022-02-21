@@ -16,7 +16,7 @@ import sklearn.feature_selection._mutual_info as mmmi
 import os
 
 def plotResults():
-    allData = pd.read_csv('NVG_NETLSD_Result.csv');
+    allData = pd.read_csv('HVG_PORTRAIT.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -162,6 +162,12 @@ def vgPortrait(network1, serie2, vg_results, iValue):
     network2 = graph2.gen_network(s1Y)
     vg_results.append(portrait_divergence(network1, network2))
 
+def hvgPortrait(network1, serie2, vg_results, iValue):
+    s1X, s1Y = serie2.addNoise(iValue)
+    graph2 = VG()
+    network2 = graph2.gen_horizontal_network(s1Y)
+    vg_results.append(portrait_divergence(network1, network2))
+
 def dcsdPortrait(network1, serie2, dcsd_results, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
     graph2 = DCSD()
@@ -193,11 +199,10 @@ def network_similaridade_x_intensidade(fileName, func):
 
     graph1 = VG();
     network1 = graph1.gen_horizontal_network(serie1.serieY);
-    desc = netlsd.heat(network1)
 
     for i in range(len(iValues)):
         for j in range(100):
-            func(desc, serie2, results, iValues[i]);
+            func(network1, serie2, results, iValues[i]);
 
         averageResults.append(np.mean(results));   
         maxResults.append(np.max(results));
@@ -267,8 +272,8 @@ if __name__ == "__main__":
     
     #network_similaridade_x_intensidade("HD_VG.csv", calcVG)
     
-    network_similaridade_x_intensidade("HVG_NETLSD_Result.csv", hvgNetLSD)
+    #network_similaridade_x_intensidade("HVG_NETLSD_Result.csv", hvgNetLSD)
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
     #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
 
-    #network_similaridade_x_intensidade("VG_PORTRAIT.csv", vgPortrait)
+    network_similaridade_x_intensidade("HVG_PORTRAIT.csv", hvgPortrait)
