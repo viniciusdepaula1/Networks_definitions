@@ -16,7 +16,7 @@ import sklearn.feature_selection._mutual_info as mmmi
 import os
 
 def plotResults():
-    allData = pd.read_csv('HVG_PORTRAIT.csv');
+    allData = pd.read_csv('./networks_results/gcd11_results/HVG_GCD11.csv');
     fig = px.line(allData, x = 'Intensity', y = ['Average Distance', 'Min Distance', 'Max Distance'], title = 'VG NETWORKS COMPARISON WITH GCD-11');
     fig.show()
 
@@ -83,14 +83,14 @@ def vgGCD11(serie2, vg_results, iValue):
     os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
     vg_results.append(readResults());
 
-def hvgGCD11(serie2, vg_results, iValue): 
+def hvgGCD11(serie2, hvg_results, iValue): 
     s1X, s1Y = serie2.addNoise(iValue)
     graph2 = VG()
     network2 = graph2.gen_horizontal_network(s1Y)
     toLeda(network2, './src/GCD-11/count/network2.gw')
     os.system("(cd ./src/GCD-11/count && python count.py network2.gw)")
     os.system("(cd ./src/GCD-11 && python3 networkComparison.py ./count 'gcd11' 1)")
-    vg_results.append(readResults());
+    hvg_results.append(readResults());
 
 def dcsdGCD11(serie2, dcsd_results, iValue):
     s1X, s1Y = serie2.addNoise(iValue)
@@ -268,7 +268,7 @@ if __name__ == "__main__":
     #serie_similaridade_x_intensidade("miResults.csv", calcMi);
     
     #mergeResults()
-    #plotResults();
+    plotResults();
     
     #network_similaridade_x_intensidade("HD_VG.csv", calcVG)
     
@@ -276,4 +276,4 @@ if __name__ == "__main__":
     #network_similaridade_x_intensidade("DCSD_GCD11.csv", dcsdGCD11)
     #network_similaridade_x_intensidade("DCTIF_NETLSD1.csv", dctifNetLSD)
 
-    network_similaridade_x_intensidade("HVG_PORTRAIT.csv", hvgPortrait)
+    #network_similaridade_x_intensidade("HVG_PORTRAIT.csv", hvgPortrait)
