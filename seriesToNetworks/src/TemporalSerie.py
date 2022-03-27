@@ -1,3 +1,4 @@
+from cProfile import label
 import numpy as np
 import matplotlib.pyplot as plot
 import random as rnd
@@ -60,6 +61,23 @@ class TemporalSerie:
         plot.grid(True, which='both')
         plot.axhline(y=0, color='k')
         plot.show()
+
+    def plotMultipleSeries(self, serie2Y, serie3Y, serie4Y) -> None:
+        plot.rcParams.update({'font.size': 30})
+
+        plot.plot(self.serieX, self.serieY, label="σ  = 0", linestyle="-")
+        plot.plot(self.serieX, serie2Y, label="σ = 0.05", linestyle="-")
+        plot.plot(self.serieX, serie3Y, label="σ = 0.25", linestyle="-")
+        plot.plot(self.serieX, serie4Y, label="σ = 0.4", linestyle="-")
+
+        #plot.title('Onda Seno')
+        plot.xlabel(r'$t$')
+        plot.ylabel(r'$f(t)$')
+        plot.grid(True, which='both')
+        plot.axhline(y=0, color='k')
+        plot.legend() 
+        plot.show()
+        #plot.savefig('bbb4.png', dpi=600)
 
     def toFile(self, fileName) -> None:
         f = open(fileName, "w+");

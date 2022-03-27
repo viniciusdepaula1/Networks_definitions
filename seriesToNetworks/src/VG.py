@@ -20,10 +20,10 @@ class VG:
     def gen_network(self, serie):
         new_g = vg.NaturalVG()
         new_g.build(serie)
-        nx_network = new_g.as_networkx()
-        #igraph_network = new_g.as_igraph()
+        #nx_network = new_g.as_networkx()
+        igraph_network = new_g.as_igraph()
 
-        return nx_network
+        return igraph_network
 
     def gen_horizontal_network(self, serie):
         new_g = vg.HorizontalVG()

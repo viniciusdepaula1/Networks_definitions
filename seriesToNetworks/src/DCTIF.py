@@ -64,7 +64,7 @@ class DCTIF:
 
         #ig.plot(graphAux)
         
-        return graphAux.to_networkx()
+        return graphAux
         
 
     def integralFunction(self, num: int, N: int) -> int:
